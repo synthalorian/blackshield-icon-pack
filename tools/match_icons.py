@@ -1643,6 +1643,32 @@ NMANUAL_GENERIC = {norm(k): v for k, v in MANUAL_GENERIC.items()}
 NMANUAL_REMAP = {norm(k): v for k, v in MANUAL_REMAP.items()}
 SIM_BRANDS = sorted((k for k in sim_norm if len(k) >= 7), key=len, reverse=True)
 
+# Stage-1 token sweep: mushy-but-confident tokens from the 100% miss analysis.
+# Runs AFTER the main keyword pass (these are looser).
+KEYWORDS_TAIL = [
+    ("editor", ("material", "edit")),
+    ("folder", ("material", "folder")),
+    ("search", ("material", "search")),
+    ("manager", ("material", "settings")),
+    ("studio", ("material", "palette")),
+    ("color", ("material", "palette")),
+    ("mobile", ("material", "smartphone")),
+    ("pixel", ("material", "smartphone")),
+    ("connect", ("material", "link")),
+    ("world", ("material", "public")),
+    ("club", ("material", "groups")),
+    ("talking", ("material", "record_voice_over")),
+    ("sonic", ("material", "sports_esports")),
+    ("legends", ("material", "sports_esports")),
+    ("dash", ("material", "sports_esports")),
+    ("number", ("material", "dialpad")),
+    ("claro", ("material", "signal_cellular_alt")),
+    ("play", ("material", "play_circle")),
+    ("icon", ("material", "dashboard")),
+    ("google", ("simple", "google")),
+    ("circle", ("material", "circle")),
+]
+
 def find_glyph(slug: str):
     n = norm(slug)
     # manual tables are keyed by human-readable names; normalize keys so
@@ -1684,6 +1710,16 @@ def find_glyph(slug: str):
             lib = simple if src == "simple" else material
             if name in lib:
                 return src, name, "keyword"
+    # stage-1 token sweep leftovers
+    for kw, (src, name) in KEYWORDS_TAIL:
+        if kw in n:
+            lib = simple if src == "simple" else material
+            if name in lib:
+                return src, name, "keyword"
+    # final fallback: letter tile from the app's initial -> 100% coverage
+    m0 = re.search(r"[a-z0-9]", n)
+    if m0:
+        return "letter", m0.group(0), "letter"
     return None
 
 manifest = {}
