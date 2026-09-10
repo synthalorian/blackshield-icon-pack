@@ -27,25 +27,34 @@ intent filters in `AndroidManifest.xml`, then read:
 - `res/drawable-anydpi-v26/ic_*.xml` — adaptive-icon wrappers (API 26+, incl. monochrome)
 - `assets/appfilter.xml` — copy for older launchers that read assets
 
-## The set (v0.2 — 1,008 icons)
+## The set (v0.3 — 1,150 icons)
 
-**1,008 unique drawables covering 29,430 app components** (4,646 apps from the
-coverage database). Glyph sources: Material icons (Apache-2.0) for generic
-apps, Simple Icons (CC0) for brands. All icons are steel-tile + bone glyph +
-one blood dash, 100% canon palette.
+**1,150 unique drawables covering 33,805 app components** (5,174 apps — 70%
+of the coverage database). Glyph sources: Material icons (Apache-2.0) for
+generic apps, Simple Icons (CC0, incl. recovered purge brands) for brands.
+All icons are steel-tile + bone glyph + one blood dash, 100% canon palette.
 
 ## Pipeline
 
 ```bash
 tools/fetch_glyph_libs.sh     # download glyph libs + coverage data -> tools/lib/
+tools/recover_brands.sh       # recover simple-icons trademark-purge brands (CC0)
 python3 tools/match_icons.py  # match coverage -> glyphs, writes tools/manifest.json
 python3 tools/forge_icons.py  # render webp/adaptive/appfilter/drawable.xml
-./gradlew assembleDebug       # APK (~11 MB)
+./gradlew assembleDebug       # APK (~12 MB)
 ```
 
 Matching tiers: manual curation > exact slug > suffix strip > strict fuzzy >
-keyword fallback (long-tail apps get the right *generic* glyph — a weather app
-always gets the weather icon). Apps sharing a glyph dedupe onto one drawable.
+brand-substring > letter-square rule > keyword fallback (long-tail apps get
+the right *generic* glyph — a weather app always gets the weather icon).
+Apps sharing a glyph dedupe onto one drawable.
+
+## Launcher support
+
+Nova, Lawnchair (+ Android 13 themed icons via `<monochrome>`), Action
+Launcher (via ADW filters), Apex, ADW, Smart, GO, Solo, Atom, Nine, Moto,
+LG, OnePlus, Sony, TSF, Projectivy (Android TV), +HOME, V, Zero, Kvaesitso,
+Niagara/Hyperion (compat), Turbo.
 
 Icons render once at xxxhdpi as WebP (Android scales down); adaptive icons use
 a shared `tile_bg` + per-icon transparent foreground, with `<monochrome>` so
