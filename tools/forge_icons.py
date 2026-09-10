@@ -52,11 +52,16 @@ FG_SCALE = 4.2                # ~100px on 192-equivalent space (adaptive safe zo
 FG_OFF = (192 - 24 * FG_SCALE) / 2
 
 PATH_RE = re.compile(r'<path[^>]*\sd="([^"]+)"')
-PRIO = {"exact": 0, "manual": 1, "suffix": 2, "fuzzy": 3, "keyword": 4}
+PRIO = {"exact": 0, "manual": 1, "suffix": 2, "fuzzy": 3, "brand-sub": 4, "keyword": 5, "letter": 6}
 
 
 def glyph_inner(src: str, name: str) -> str:
     """Inner SVG content of the glyph (paths, circles, rects...)."""
+    if src == "letter":
+        # Bone initial-letter tile (DejaVu Sans Bold, centered on the 24-grid).
+        ch = name.upper()
+        return (f'<text x="12" y="16.2" font-family="DejaVu Sans" font-weight="bold" '
+                f'font-size="15" text-anchor="middle">{ch}</text>')
     svg = (LIB / src / ("filled" if src == "material" else "icons") / f"{name}.svg").read_text()
     m = re.search(r"<svg[^>]*>(.*)</svg>", svg, re.S)
     if not m:
@@ -147,7 +152,7 @@ def main() -> int:
     drawables = {}  # drawable name -> (src, glyph, [components])
     for (src, gname), entries in groups.items():
         entries.sort(key=lambda e: (PRIO.get(e[1], 5), len(e[0]), e[0]))
-        rep = entries[0][0]
+        rep = f"ic_letter_{gname}" if src == "letter" else entries[0][0]
         comps = [c for _, _, cl in entries for c in cl]
         drawables[rep] = (src, gname, comps)
     print(f"{len(manifest)} apps -> {len(drawables)} unique drawables, "

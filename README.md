@@ -27,12 +27,14 @@ intent filters in `AndroidManifest.xml`, then read:
 - `res/drawable-anydpi-v26/ic_*.xml` — adaptive-icon wrappers (API 26+, incl. monochrome)
 - `assets/appfilter.xml` — copy for older launchers that read assets
 
-## The set (v0.3 — 1,150 icons)
+## The set (v1.0 — 100% coverage)
 
-**1,150 unique drawables covering 33,805 app components** (5,174 apps — 70%
-of the coverage database). Glyph sources: Material icons (Apache-2.0) for
-generic apps, Simple Icons (CC0, incl. recovered purge brands) for brands.
-All icons are steel-tile + bone glyph + one blood dash, 100% canon palette.
+**1,189 unique drawables covering all 48,120 app components in the coverage
+database — 13,767 apps, 100%.** Glyph sources: Material icons (Apache-2.0)
+for generic apps, Simple Icons (CC0, incl. recovered purge brands) for
+brands, and forged DejaVu Sans Bold letter tiles (A–Z/0–9) as the universal
+fallback — every known app gets a Blackshield icon: branded where we have it,
+category-generic where we don't, letter-initial otherwise.
 
 ## Pipeline
 
@@ -45,9 +47,8 @@ python3 tools/forge_icons.py  # render webp/adaptive/appfilter/drawable.xml
 ```
 
 Matching tiers: manual curation > exact slug > suffix strip > strict fuzzy >
-brand-substring > letter-square rule > keyword fallback (long-tail apps get
-the right *generic* glyph — a weather app always gets the weather icon).
-Apps sharing a glyph dedupe onto one drawable.
+brand-substring > letter-square rule > keyword pass > token sweep > letter
+tile fallback (100% coverage). Apps sharing a glyph dedupe onto one drawable.
 
 ## Launcher support
 
@@ -62,7 +63,7 @@ Android 13+ themed icons work out of the box.
 
 ## Ship checklist (Play, $0.99–1.99)
 
-- [x] Grow the pack past the ~1,500 coverage gate (29,430 components mapped)
+- [x] 100% coverage of the known-app database (48,120 components)
 - [ ] Release signing key (Play App Signing) + `assembleRelease`
 - [ ] 512px store icon + feature graphic (1024×500) + screenshots
 - [ ] Privacy policy URL (trivial: pack collects nothing, but Play requires one)
