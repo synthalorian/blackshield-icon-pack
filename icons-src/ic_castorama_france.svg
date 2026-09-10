@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E1E26"/>
+      <stop offset="1" stop-color="#101014"/>
+    </linearGradient>
+    <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F5F1E8"/>
+      <stop offset="1" stop-color="#D9D2C5"/>
+    </linearGradient>
+  </defs>
+  <rect x="10.4" y="9.5" width="171.2" height="171.2" rx="34"
+        fill="url(#tile)" stroke="#2A2A31" stroke-width="1.5"/>
+  <g fill="url(#bone)"
+     transform="translate(40.8 36.8) scale(4.6)"><path d="M8.91 16.106c-2.129 0-3.659-1.794-3.659-4.266 0-2.148 1.468-4.095 3.488-4.095 2.275 0 3.545 1.857 3.545 1.857l2.939-3.298c-.91-1.062-2.598-2.882-6.503-2.882-4.388 0-8.209 3.489-8.209 8.456 0 4.766 3.475 8.532 8.266 8.532 3.855 0 5.572-2.017 6.54-3.129l-2.831-2.969c0 .001-1.415 1.794-3.576 1.794zM18.283 0v9.988h-2.064a1.92 1.92 0 1 0 0 3.84h2.064V24h5.205V0h-5.205z"/></g>
+  <rect x="76" y="156" width="40" height="6" rx="3" fill="#C1121F"/>
+</svg>

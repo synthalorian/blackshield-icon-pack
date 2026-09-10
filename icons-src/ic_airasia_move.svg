@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E1E26"/>
+      <stop offset="1" stop-color="#101014"/>
+    </linearGradient>
+    <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F5F1E8"/>
+      <stop offset="1" stop-color="#D9D2C5"/>
+    </linearGradient>
+  </defs>
+  <rect x="10.4" y="9.5" width="171.2" height="171.2" rx="34"
+        fill="url(#tile)" stroke="#2A2A31" stroke-width="1.5"/>
+  <g fill="url(#bone)"
+     transform="translate(40.8 36.8) scale(4.6)"><path d="M11.54 14.49c-1.278 0-2.264-.998-2.264-2.276 0-1.252.98-2.27 2.264-2.27 1.232 0 2.238 1.018 2.238 2.27 0 1.278-1.005 2.277-2.239 2.277zm3.074-7.854l-.214.998c-.59-1.18-2.348-1.297-3.295-1.297-2.952 0-5.527 2.841-5.527 6.746 0 3.14 1.875 5.111 4.23 5.111 1.316 0 2.432-.304 3.353-1.4l-.24 1.102h3.711l1.692-11.26c-1.238-.001-2.482.01-3.71 0zM12 0c6.63 0 12 5.37 12 12s-5.37 12-12 12S0 18.63 0 12 5.37 0 12 0Z"/></g>
+  <rect x="76" y="156" width="40" height="6" rx="3" fill="#C1121F"/>
+</svg>

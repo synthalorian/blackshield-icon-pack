@@ -55,12 +55,16 @@ PATH_RE = re.compile(r'<path[^>]*\sd="([^"]+)"')
 PRIO = {"exact": 0, "manual": 1, "suffix": 2, "fuzzy": 3, "keyword": 4}
 
 
-def glyph_path(src: str, name: str) -> str:
+def glyph_inner(src: str, name: str) -> str:
+    """Inner SVG content of the glyph (paths, circles, rects...)."""
     svg = (LIB / src / ("filled" if src == "material" else "icons") / f"{name}.svg").read_text()
-    paths = PATH_RE.findall(svg)
-    if not paths:
-        raise ValueError(f"no path in {src}/{name}")
-    return " ".join(paths)
+    m = re.search(r"<svg[^>]*>(.*)</svg>", svg, re.S)
+    if not m:
+        raise ValueError(f"no content in {src}/{name}")
+    inner = re.sub(r"<title>.*?</title>", "", m.group(1), flags=re.S).strip()
+    if not inner:
+        raise ValueError(f"empty glyph {src}/{name}")
+    return inner
 
 
 def svg_legacy(glyph: str) -> str:
@@ -78,8 +82,8 @@ def svg_legacy(glyph: str) -> str:
   </defs>
   <rect x="10.4" y="9.5" width="171.2" height="171.2" rx="34"
         fill="url(#tile)" stroke="{TILE_STROKE}" stroke-width="1.5"/>
-  <path d="{glyph}" fill="url(#bone)"
-        transform="translate({LEGACY_OFF:.1f} {LEGACY_OFF - 4:.1f}) scale({LEGACY_SCALE})"/>
+  <g fill="url(#bone)"
+     transform="translate({LEGACY_OFF:.1f} {LEGACY_OFF - 4:.1f}) scale({LEGACY_SCALE})">{glyph}</g>
   <rect x="76" y="156" width="40" height="6" rx="3" fill="{BLOOD}"/>
 </svg>
 """
@@ -94,8 +98,8 @@ def svg_fg(glyph: str) -> str:
       <stop offset="1" stop-color="{BONE_LO}"/>
     </linearGradient>
   </defs>
-  <path d="{glyph}" fill="url(#bone)"
-        transform="translate({FG_OFF:.1f} {FG_OFF:.1f}) scale({FG_SCALE})"/>
+  <g fill="url(#bone)"
+     transform="translate({FG_OFF:.1f} {FG_OFF:.1f}) scale({FG_SCALE})">{glyph}</g>
 </svg>
 """
 
@@ -169,7 +173,7 @@ def main() -> int:
     # ---- render all drawables ----
     jobs = []
     for name, (src, gname, _) in sorted(drawables.items()):
-        glyph = glyph_path(src, gname)
+        glyph = glyph_inner(src, gname)
         legacy = SVG_OUT / f"{name}.svg"
         fg = SVG_OUT / f"{name}_fg.svg"
         legacy.write_text(svg_legacy(glyph))

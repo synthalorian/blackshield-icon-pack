@@ -11,7 +11,7 @@
   </defs>
   <rect x="10.4" y="9.5" width="171.2" height="171.2" rx="34"
         fill="url(#tile)" stroke="#2A2A31" stroke-width="1.5"/>
-  <path d="M7.417 9.307 0 14.693h9.167L12 23.413l2.833-8.72H24s-3.915-2.84-7.417-5.386l2.834-8.72L12 5.976C8.499 3.438 4.583.588 4.583.588z" fill="url(#bone)"
-        transform="translate(40.8 36.8) scale(4.6)"/>
+  <g fill="url(#bone)"
+     transform="translate(40.8 36.8) scale(4.6)"><path d="M7.417 9.307 0 14.693h9.167L12 23.413l2.833-8.72H24s-3.915-2.84-7.417-5.386l2.834-8.72L12 5.976C8.499 3.438 4.583.588 4.583.588z"/></g>
   <rect x="76" y="156" width="40" height="6" rx="3" fill="#C1121F"/>
 </svg>
