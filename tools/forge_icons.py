@@ -1,34 +1,41 @@
 #!/usr/bin/env python3
-"""Blackshield Icon Forge (Android edition).
+"""Blackshield Icon Forge (Android edition) — v2 pipeline.
 
-Renders the Blackshield icon set as PNGs at Android launcher densities.
-Style canon (from blackshield-icon-forge skill):
-  - Nordzy-style rounded tile, dark steel gradient #1E1E26 -> #101014
-  - #2A2A31 hairline stroke on the tile
-  - Bone-gradient glyph (#F5F1E8 -> #D9D2C5)
-  - ONE blood accent per icon (#C1121F), restraint is the livery
+Reads tools/manifest.json (built by match_icons.py), dedupes apps that share
+a glyph, then renders:
+  - drawable-xxxhdpi/<name>.webp      legacy launcher icon (192px full tile)
+  - drawable-xxxhdpi/<name>_fg.webp   adaptive foreground (432px, glyph only)
+  - drawable-xxxhdpi/tile_bg.webp     shared adaptive background (432px)
+  - drawable-anydpi-v26/<name>.xml    adaptive icon (bg + fg + monochrome)
+  - res/xml/appfilter.xml             component -> drawable map (all apps)
+  - assets/appfilter.xml              copy for older launchers
+  - res/xml/drawable.xml              picker index
+  - icons-src/<name>.svg              master SVG per unique drawable
 
-Canvas: 192x192 (xxxhdpi launcher icon base). Densities:
-  mdpi=48, hdpi=72, xhdpi=96, xxhdpi=144, xxxhdpi=192
+Style canon: dark steel tile gradient #1E1E26 -> #101014, #2A2A31 hairline,
+bone-gradient glyph (#F5F1E8 -> #D9D2C5), ONE blood accent (#C1121F).
 
-Glyph shapes use Material icon path data (Apache-2.0) on a 24x24 grid,
-scaled into the tile's safe zone.
+Glyph path data: Material icons (Apache-2.0) + Simple Icons (CC0), 24x24 grid.
 """
+import json
+import multiprocessing as mp
+import re
+import shutil
 import subprocess
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+TOOLS = ROOT / "tools"
+LIB = TOOLS / "lib"
 RES = ROOT / "app" / "src" / "main" / "res"
+ASSETS = ROOT / "app" / "src" / "main" / "assets"
 SVG_OUT = ROOT / "build" / "svg"
+SRC_OUT = ROOT / "icons-src"
 
-DENSITIES = {
-    "mdpi": 48,
-    "hdpi": 72,
-    "xhdpi": 96,
-    "xxhdpi": 144,
-    "xxxhdpi": 192,
-}
+LEGACY_PX = 192   # 48dp @ xxxhdpi
+ADAPTIVE_PX = 432  # 108dp @ xxxhdpi
 
 # Blackshield palette
 TILE_HI = "#1E1E26"
@@ -38,39 +45,26 @@ BONE_HI = "#F5F1E8"
 BONE_LO = "#D9D2C5"
 BLOOD = "#C1121F"
 
-# Material icon path data (24x24 grid, Apache-2.0)
-GLYPHS = {
-    "ic_browser": "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z",
-    "ic_mail": "M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z",
-    "ic_phone": "M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z",
-    "ic_messages": "M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z",
-    "ic_camera": "M12 15.2c1.77 0 3.2-1.43 3.2-3.2s-1.43-3.2-3.2-3.2-3.2 1.43-3.2 3.2 1.43 3.2 3.2 3.2zM9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z",
-    "ic_gallery": "M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z",
-    "ic_music": "M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z",
-    "ic_calendar": "M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z",
-    "ic_settings": "M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z",
-    "ic_calculator": "M19 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6.25 7.72h11.5v3h-11.5v-3zm2.62 10.6l1.56-1.56-1.56-1.56 1.41-1.41 1.56 1.56 1.56-1.56 1.41 1.41-1.56 1.56 1.56 1.56-1.41 1.41-1.56-1.56-1.56 1.56-1.41-1.41z",
-    # Brand shield for the pack's own launcher icon (Material 'shield')
-    "ic_launcher": "M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z",
-}
+# Glyph scale: 24-grid -> px inside the 192 canvas
+LEGACY_SCALE = 4.6            # 110px glyph
+LEGACY_OFF = (192 - 24 * LEGACY_SCALE) / 2
+FG_SCALE = 4.2                # ~100px on 192-equivalent space (adaptive safe zone)
+FG_OFF = (192 - 24 * FG_SCALE) / 2
 
-# Glyph scale: 24-grid -> ~110px inside the 171px tile
-GLYPH_SCALE = 4.6
-GLYPH_OFF = (192 - 24 * GLYPH_SCALE) / 2  # 40.8
+PATH_RE = re.compile(r'<path[^>]*\sd="([^"]+)"')
+PRIO = {"exact": 0, "manual": 1, "suffix": 2, "fuzzy": 3, "keyword": 4}
 
 
-def svg_tile(glyph_path: str, accent: str = "dash") -> str:
-    """Full icon: dark steel tile + bone glyph + one blood accent."""
-    if accent == "core":
-        # Blood core inside the glyph silhouette (brand shield)
-        accent_el = (
-            f'<path d="{glyph_path}" fill="{BLOOD}" '
-            f'transform="translate(76 76) scale(1.667)"/>'
-        )
-    else:
-        # Blood dash at the bottom of the tile
-        accent_el = f'<rect x="76" y="156" width="40" height="6" rx="3" fill="{BLOOD}"/>'
+def glyph_path(src: str, name: str) -> str:
+    svg = (LIB / src / ("filled" if src == "material" else "icons") / f"{name}.svg").read_text()
+    paths = PATH_RE.findall(svg)
+    if not paths:
+        raise ValueError(f"no path in {src}/{name}")
+    return " ".join(paths)
 
+
+def svg_legacy(glyph: str) -> str:
+    """Full icon: dark steel tile + bone glyph + blood dash."""
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
   <defs>
     <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
@@ -84,46 +78,151 @@ def svg_tile(glyph_path: str, accent: str = "dash") -> str:
   </defs>
   <rect x="10.4" y="9.5" width="171.2" height="171.2" rx="34"
         fill="url(#tile)" stroke="{TILE_STROKE}" stroke-width="1.5"/>
-  <path d="{glyph_path}" fill="url(#bone)"
-        transform="translate({GLYPH_OFF:.1f} {GLYPH_OFF - 4:.1f}) scale({GLYPH_SCALE})"/>
-  {accent_el}
+  <path d="{glyph}" fill="url(#bone)"
+        transform="translate({LEGACY_OFF:.1f} {LEGACY_OFF - 4:.1f}) scale({LEGACY_SCALE})"/>
+  <rect x="76" y="156" width="40" height="6" rx="3" fill="{BLOOD}"/>
 </svg>
 """
 
 
-def render(svg_path: Path, size: int, out_path: Path) -> None:
+def svg_fg(glyph: str) -> str:
+    """Adaptive foreground: bone glyph only, transparent bg."""
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="{BONE_HI}"/>
+      <stop offset="1" stop-color="{BONE_LO}"/>
+    </linearGradient>
+  </defs>
+  <path d="{glyph}" fill="url(#bone)"
+        transform="translate({FG_OFF:.1f} {FG_OFF:.1f}) scale({FG_SCALE})"/>
+</svg>
+"""
+
+
+SVG_TILE_BG = f"""<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="{TILE_HI}"/>
+      <stop offset="1" stop-color="{TILE_LO}"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="192" height="192" fill="url(#tile)"/>
+</svg>
+"""
+
+
+def render_webp(svg_path: Path, px: int, out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        ["rsvg-convert", "-w", str(size), "-h", str(size),
-         str(svg_path), "-o", str(out_path)],
-        check=True,
-    )
+    tmp = out_path.with_suffix(".png")
+    subprocess.run(["rsvg-convert", "-w", str(px), "-h", str(px),
+                    str(svg_path), "-o", str(tmp)], check=True)
+    subprocess.run(["magick", str(tmp), "-quality", "92", str(out_path)], check=True)
+    tmp.unlink()
+
+
+def render_one(job):
+    name, legacy_svg, fg_svg = job
+    try:
+        render_webp(legacy_svg, LEGACY_PX, RES / "drawable-xxxhdpi" / f"{name}.webp")
+        render_webp(fg_svg, ADAPTIVE_PX, RES / "drawable-xxxhdpi" / f"{name}_fg.webp")
+        return None
+    except subprocess.CalledProcessError as e:
+        return f"{name}: {e}"
 
 
 def main() -> int:
+    manifest = json.loads((TOOLS / "manifest.json").read_text())
+
+    # ---- dedupe apps by glyph -> one drawable per unique glyph ----
+    groups = defaultdict(list)  # (src, glyph) -> [(drawable, match, components)]
+    for name, v in manifest.items():
+        groups[(v["glyph_src"], v["glyph_name"])].append(
+            (name, v["match"], v["components"]))
+
+    drawables = {}  # drawable name -> (src, glyph, [components])
+    for (src, gname), entries in groups.items():
+        entries.sort(key=lambda e: (PRIO.get(e[1], 5), len(e[0]), e[0]))
+        rep = entries[0][0]
+        comps = [c for _, _, cl in entries for c in cl]
+        drawables[rep] = (src, gname, comps)
+    print(f"{len(manifest)} apps -> {len(drawables)} unique drawables, "
+          f"{sum(len(v[2]) for v in drawables.values())} components")
+
+    # ---- clean generated dirs ----
+    for d in RES.glob("drawable-*"):
+        if d.name == "drawable-anydpi-v26":
+            for f in d.glob("ic_*.xml"):
+                f.unlink()
+        else:
+            shutil.rmtree(d)
+    (RES / "drawable-xxxhdpi").mkdir(exist_ok=True)
+    (RES / "drawable-anydpi-v26").mkdir(exist_ok=True)
     SVG_OUT.mkdir(parents=True, exist_ok=True)
-    count = 0
-    for name, path in GLYPHS.items():
-        accent = "core" if name == "ic_launcher" else "dash"
-        svg = svg_tile(path, accent)
-        svg_path = SVG_OUT / f"{name}.svg"
-        svg_path.write_text(svg)
+    SRC_OUT.mkdir(exist_ok=True)
 
-        bucket = "mipmap" if name == "ic_launcher" else "drawable"
-        for density, px in DENSITIES.items():
-            render(svg_path, px, RES / f"{bucket}-{density}" / f"{name}.png")
-            count += 1
-            if bucket == "drawable" or name == "ic_launcher":
-                # Separate foreground asset so the anydpi-v26 adaptive-icon
-                # XML of the same name can reference it without a circular ref.
-                render(svg_path, px, RES / f"{bucket}-{density}" / f"{name}_fg.png")
-                count += 1
-        # Keep the master SVG alongside sources for future re-forging
-        (ROOT / "icons-src").mkdir(exist_ok=True)
-        (ROOT / "icons-src" / f"{name}.svg").write_text(svg)
+    # ---- shared adaptive background ----
+    bg_svg = SVG_OUT / "tile_bg.svg"
+    bg_svg.write_text(SVG_TILE_BG)
+    render_webp(bg_svg, ADAPTIVE_PX, RES / "drawable-xxxhdpi" / "tile_bg.webp")
 
-    print(f"forged {len(GLYPHS)} icons -> {count} PNGs "
-          f"({len(DENSITIES)} densities each)")
+    # ---- render all drawables ----
+    jobs = []
+    for name, (src, gname, _) in sorted(drawables.items()):
+        glyph = glyph_path(src, gname)
+        legacy = SVG_OUT / f"{name}.svg"
+        fg = SVG_OUT / f"{name}_fg.svg"
+        legacy.write_text(svg_legacy(glyph))
+        fg.write_text(svg_fg(glyph))
+        (SRC_OUT / f"{name}.svg").write_text(svg_legacy(glyph))
+        jobs.append((name, legacy, fg))
+
+    with mp.Pool() as pool:
+        errors = [e for e in pool.map(render_one, jobs) if e]
+    if errors:
+        print(f"{len(errors)} render errors:", *errors[:10], sep="\n  ")
+        return 1
+    print(f"rendered {len(jobs)} drawables x2 (legacy + fg) as webp")
+
+    # ---- adaptive icon XMLs ----
+    adaptive_tpl = (
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
+        '    <background android:drawable="@drawable/tile_bg" />\n'
+        '    <foreground android:drawable="@drawable/{name}_fg" />\n'
+        '    <monochrome android:drawable="@drawable/{name}_fg" />\n'
+        '</adaptive-icon>\n'
+    )
+    for name in drawables:
+        (RES / "drawable-anydpi-v26" / f"{name}.xml").write_text(
+            adaptive_tpl.format(name=name))
+
+    # ---- appfilter.xml (res + assets) ----
+    lines = [
+        '<?xml version="1.0" encoding="utf-8"?>',
+        '<!-- GENERATED by tools/forge_icons.py — do not hand-edit.',
+        f'     {len(drawables)} icons, {sum(len(v[2]) for v in drawables.values())} components. -->',
+        '<resources>',
+    ]
+    for name, (_, _, comps) in sorted(drawables.items()):
+        lines.append(f'    <!-- {name} -->')
+        for c in sorted(set(comps)):
+            lines.append(f'    <item component="ComponentInfo{{{c}}}" drawable="{name}" />')
+    lines.append('</resources>')
+    appfilter = "\n".join(lines) + "\n"
+    (RES / "xml" / "appfilter.xml").write_text(appfilter)
+    ASSETS.mkdir(parents=True, exist_ok=True)
+    (ASSETS / "appfilter.xml").write_text(appfilter)
+
+    # ---- drawable.xml (picker index) ----
+    dlines = ['<?xml version="1.0" encoding="utf-8"?>',
+              '<!-- GENERATED by tools/forge_icons.py -->', '<resources>']
+    dlines += [f'    <item drawable="{n}" />' for n in sorted(drawables)]
+    dlines.append('</resources>')
+    (RES / "xml" / "drawable.xml").write_text("\n".join(dlines) + "\n")
+
+    print(f"appfilter: {sum(len(v[2]) for v in drawables.values())} entries, "
+          f"drawable.xml: {len(drawables)} items")
     return 0
 
 
