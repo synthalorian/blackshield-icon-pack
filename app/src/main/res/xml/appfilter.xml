@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  appfilter.xml — the heart of an Android icon pack.
+  Launchers (Nova, Lawnchair, Apex, ADW, Smart, Niagara via compat, etc.)
+  parse this to map app component names -> pack drawables.
+  Format: <item component="ComponentInfo{package/activity}" drawable="icon_name"/>
+-->
+<resources>
+
+    <!-- Browser -->
+    <item component="ComponentInfo{com.android.chrome/com.google.android.apps.chrome.Main}" drawable="ic_browser" />
+    <item component="ComponentInfo{org.mozilla.firefox/org.mozilla.gecko.BrowserApp}" drawable="ic_browser" />
+    <item component="ComponentInfo{com.brave.browser/com.google.android.apps.chrome.Main}" drawable="ic_browser" />
+    <item component="ComponentInfo{com.opera.browser/com.opera.Opera}" drawable="ic_browser" />
+
+    <!-- Mail -->
+    <item component="ComponentInfo{com.google.android.gm/com.google.android.gm.ConversationListActivityGmail}" drawable="ic_mail" />
+    <item component="ComponentInfo{com.android.email/com.android.email.activity.Welcome}" drawable="ic_mail" />
+
+    <!-- Phone -->
+    <item component="ComponentInfo{com.google.android.dialer/com.google.android.dialer.extensions.GoogleDialtactsActivity}" drawable="ic_phone" />
+    <item component="ComponentInfo{com.android.dialer/com.android.dialer.main.impl.MainActivity}" drawable="ic_phone" />
+    <item component="ComponentInfo{com.android.contacts/com.android.contacts.activities.PeopleActivity}" drawable="ic_phone" />
+
+    <!-- Messages -->
+    <item component="ComponentInfo{com.google.android.apps.messaging/com.google.android.apps.messaging.ui.ConversationListActivity}" drawable="ic_messages" />
+    <item component="ComponentInfo{com.android.messaging/com.android.messaging.ui.conversationlist.ConversationListActivity}" drawable="ic_messages" />
+
+    <!-- Camera -->
+    <item component="ComponentInfo{com.google.android.GoogleCamera/com.android.camera.CameraLauncher}" drawable="ic_camera" />
+    <item component="ComponentInfo{com.android.camera/com.android.camera.Camera}" drawable="ic_camera" />
+    <item component="ComponentInfo{com.android.camera2/com.android.camera.CameraActivity}" drawable="ic_camera" />
+
+    <!-- Gallery -->
+    <item component="ComponentInfo{com.google.android.apps.photos/com.google.android.apps.photos.home.HomeActivity}" drawable="ic_gallery" />
+    <item component="ComponentInfo{com.android.gallery3d/com.android.gallery3d.app.GalleryActivity}" drawable="ic_gallery" />
+
+    <!-- Music -->
+    <item component="ComponentInfo{com.spotify.music/com.spotify.music.MainActivity}" drawable="ic_music" />
+    <item component="ComponentInfo{com.google.android.music/com.android.music.activitymanagement.TopLevelActivity}" drawable="ic_music" />
+    <item component="ComponentInfo{com.google.android.apps.youtube.music/com.google.android.apps.youtube.music.activities.MusicActivity}" drawable="ic_music" />
+
+    <!-- Calendar -->
+    <item component="ComponentInfo{com.google.android.calendar/com.android.calendar.AllInOneActivity}" drawable="ic_calendar" />
+    <item component="ComponentInfo{com.android.calendar/com.android.calendar.AllInOneActivity}" drawable="ic_calendar" />
+
+    <!-- Settings -->
+    <item component="ComponentInfo{com.android.settings/com.android.settings.Settings}" drawable="ic_settings" />
+    <item component="ComponentInfo{com.android.settings/com.android.settings.MainSettings}" drawable="ic_settings" />
+
+    <!-- Calculator -->
+    <item component="ComponentInfo{com.google.android.calculator/com.android.calculator2.Calculator}" drawable="ic_calculator" />
+    <item component="ComponentInfo{com.android.calculator2/com.android.calculator2.Calculator}" drawable="ic_calculator" />
+
+</resources>

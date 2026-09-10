@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Blackshield canon palette -->
+    <color name="blackshield_bg">#101014</color>
+    <color name="blackshield_surface">#16161C</color>
+    <color name="blackshield_text">#D8D3C8</color>
+    <color name="blackshield_accent">#C1121F</color>
+    <!-- Adaptive icon backdrop -->
+    <color name="icon_background">#101014</color>
+</resources>

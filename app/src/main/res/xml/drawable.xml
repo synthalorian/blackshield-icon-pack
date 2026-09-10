@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  drawable.xml — index of every icon in the pack.
+  Launchers use this to render the icon picker / preview grid.
+-->
+<resources>
+    <category title="Blackshield" />
+    <item drawable="ic_browser" />
+    <item drawable="ic_mail" />
+    <item drawable="ic_phone" />
+    <item drawable="ic_messages" />
+    <item drawable="ic_camera" />
+    <item drawable="ic_gallery" />
+    <item drawable="ic_music" />
+    <item drawable="ic_calendar" />
+    <item drawable="ic_settings" />
+    <item drawable="ic_calculator" />
+</resources>
