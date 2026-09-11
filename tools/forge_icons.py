@@ -198,6 +198,91 @@ def render_one(job):
         return f"{name}: {e}"
 
 
+def render_recolor(master: Path, out_res: Path, name: str, pal: dict) -> None:
+    """Recolor an extracted app icon into the livery: luminance -> glyph ramp,
+    alpha preserved. Produces <name>.webp (legacy tile) + <name>_fg.webp."""
+    from PIL import Image, ImageDraw
+    import numpy as np
+
+    im = Image.open(master).convert("RGBA")
+    s = max(im.size)
+    sq = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    sq.paste(im, ((s - im.width) // 2, (s - im.height) // 2))
+    arr = np.asarray(sq).astype(np.float32)
+    lum = (0.299 * arr[..., 0] + 0.587 * arr[..., 1] + 0.114 * arr[..., 2]) / 255.0
+    alpha = arr[..., 3] / 255.0
+    m = alpha > 0.05
+    if m.any():
+        lo, hi = np.percentile(lum[m], 2), np.percentile(lum[m], 98)
+        lum = np.clip((lum - lo) / max(hi - lo, 1e-6), 0, 1)
+    glo = np.array([int(pal["glyph_lo"][i:i + 2], 16) for i in (1, 3, 5)], np.float32)
+    ghi = np.array([int(pal["glyph_hi"][i:i + 2], 16) for i in (1, 3, 5)], np.float32)
+    rgb = glo[None, None, :] + lum[..., None] * (ghi - glo)[None, None, :]
+    icon = Image.fromarray(np.dstack([rgb, alpha * 255]).astype(np.uint8))
+
+    full_bleed = (m.mean() > 0.9) if m.any() else False
+
+    # tile mask (shared)
+    def squircle_mask(px: int) -> "Image.Image":
+        r = 34 / 192 * px
+        inset = 10.4 / 192 * px
+        size = 171.2 / 192 * px
+        tm = Image.new("L", (px, px), 0)
+        ImageDraw.Draw(tm).rounded_rectangle(
+            [inset, inset, inset + size, inset + size], radius=r, fill=255)
+        return tm
+
+    if full_bleed:
+        # full-bleed artwork IS the tile: mask recolored icon into the squircle
+        fg = Image.new("RGBA", (ADAPTIVE_PX, ADAPTIVE_PX), (0, 0, 0, 0))
+        icon_fg = icon.resize((ADAPTIVE_PX, ADAPTIVE_PX), Image.Resampling.LANCZOS)
+        fg.paste(icon_fg, (0, 0), squircle_mask(ADAPTIVE_PX))
+        fg.save(out_res / "drawable-xxxhdpi" / f"{name}_fg.webp", quality=92)
+
+        full = Image.new("RGBA", (LEGACY_PX, LEGACY_PX), (0, 0, 0, 0))
+        icon_leg = icon.resize((LEGACY_PX, LEGACY_PX), Image.Resampling.LANCZOS)
+        full.paste(icon_leg, (0, 0), squircle_mask(LEGACY_PX))
+        draw = ImageDraw.Draw(full)
+        inset = 10.4
+        draw.rounded_rectangle([inset, inset - 0.9, inset + 171.2, inset - 0.9 + 171.2],
+                               radius=34, outline=TILE_STROKE, width=2)
+        draw.rounded_rectangle([76, 156, 116, 162], radius=3, fill=pal["accent"])
+        full.save(out_res / "drawable-xxxhdpi" / f"{name}.webp", quality=92)
+        return
+
+    # glyph-style: transparent-bg icon at safe-zone size on our tile
+    fg_px = round(FG_SCALE * 24 / 192 * ADAPTIVE_PX)
+    fg = Image.new("RGBA", (ADAPTIVE_PX, ADAPTIVE_PX), (0, 0, 0, 0))
+    icon_fg = icon.resize((fg_px, fg_px), Image.Resampling.LANCZOS)
+    fg.paste(icon_fg, ((ADAPTIVE_PX - fg_px) // 2, (ADAPTIVE_PX - fg_px) // 2), icon_fg)
+    fg.save(out_res / "drawable-xxxhdpi" / f"{name}_fg.webp", quality=92)
+
+    # legacy: steel tile + icon at LEGACY size + accent dash
+    leg = Image.new("RGBA", (LEGACY_PX, LEGACY_PX), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(leg)
+    # tile gradient (vertical TILE_HI -> TILE_LO)
+    t_hi = [int(TILE_HI[i:i + 2], 16) for i in (1, 3, 5)]
+    t_lo = [int(TILE_LO[i:i + 2], 16) for i in (1, 3, 5)]
+    for y in range(LEGACY_PX):
+        t = y / LEGACY_PX
+        draw.line([(0, y), (LEGACY_PX, y)],
+                  fill=tuple(round(a + (b - a) * t) for a, b in zip(t_hi, t_lo)))
+    tile_mask = Image.new("L", (LEGACY_PX, LEGACY_PX), 0)
+    ImageDraw.Draw(tile_mask).rounded_rectangle(
+        [10.4, 9.5, 10.4 + 171.2, 9.5 + 171.2], radius=34, fill=255)
+    full = Image.new("RGBA", (LEGACY_PX, LEGACY_PX), (0, 0, 0, 0))
+    full.paste(leg, (0, 0), tile_mask)
+    draw = ImageDraw.Draw(full)
+    draw.rounded_rectangle([10.4, 9.5, 10.4 + 171.2, 9.5 + 171.2], radius=34,
+                           outline=TILE_STROKE, width=2)
+    icon_px = round(LEGACY_SCALE * 24)
+    icon_leg = icon.resize((icon_px, icon_px), Image.Resampling.LANCZOS)
+    off = round(LEGACY_OFF)
+    full.paste(icon_leg, (off, off - 4), icon_leg)
+    draw.rounded_rectangle([76, 156, 116, 162], radius=3, fill=pal["accent"])
+    full.save(out_res / "drawable-xxxhdpi" / f"{name}.webp", quality=92)
+
+
 def main() -> int:
     import argparse
     ap = argparse.ArgumentParser()
@@ -222,6 +307,17 @@ def main() -> int:
         rep = f"ic_letter_{gname}" if src == "letter" else entries[0][0]
         comps = [c for _, _, cl in entries for c in cl]
         drawables[rep] = (src, gname, comps)
+
+    # ---- device sync extras (apps on the phone with no DB coverage) ----
+    # glyph entries flow through the normal pipeline; src=="recolor" entries
+    # are rendered from extracted-icon masters after the main render pass.
+    device_mf = TOOLS / "device_manifest.json"
+    if device_mf.exists():
+        for name, v in json.loads(device_mf.read_text()).items():
+            if v["source"] == "glyph":
+                drawables[name] = (v["glyph_src"], v["glyph_name"], v["components"])
+            else:
+                drawables[name] = ("recolor", name, v["components"])
     print(f"{len(manifest)} apps -> {len(drawables)} unique drawables, "
           f"{sum(len(v[2]) for v in drawables.values())} components")
 
@@ -257,6 +353,8 @@ def main() -> int:
     # ---- render all drawables ----
     jobs = []
     for name, (src, gname, _) in sorted(drawables.items()):
+        if src == "recolor":
+            continue  # rendered after the pool pass from PNG masters
         glyph = glyph_inner(src, gname)
         legacy = SVG_OUT / f"{args.variant}_{name}.svg"
         fg = SVG_OUT / f"{args.variant}_{name}_fg.svg"
@@ -272,6 +370,20 @@ def main() -> int:
         print(f"{len(errors)} render errors:", *errors[:10], sep="\n  ")
         return 1
     print(f"rendered {len(jobs)} drawables x2 (legacy + fg) as webp")
+
+    # ---- recolor pass (device-sync extracted icons) ----
+    n_recolor = 0
+    for name, (src, _, _) in drawables.items():
+        if src != "recolor":
+            continue
+        master = TOOLS / "device_icons" / f"{name}.png"
+        if master.exists():
+            render_recolor(master, out_res, name, pal)
+            n_recolor += 1
+        else:
+            print(f"  WARNING: no master for recolor drawable {name}")
+    if n_recolor:
+        print(f"recolored {n_recolor} device icons into {args.variant} livery")
 
     # ---- adaptive icon XMLs ----
     adaptive_tpl = (

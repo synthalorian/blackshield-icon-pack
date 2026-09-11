@@ -1722,27 +1722,33 @@ def find_glyph(slug: str):
         return "letter", m0.group(0), "letter"
     return None
 
-manifest = {}
-stats = defaultdict(int)
-for slug, comps in sorted(cov.items()):
-    res = find_glyph(slug)
-    if res:
-        src, gname, how = res
-        stats[how] += 1
-        our = "ic_" + re.sub(r"[^a-z0-9_]", "_", slug.lower()).lstrip("_")
-        manifest[our] = {"glyph_src": src, "glyph_name": gname, "components": comps, "match": how, "slug": slug}
-    else:
-        misses.append(slug)
+def run_matching() -> None:
+    manifest = {}
+    stats = defaultdict(int)
+    misses = []
+    for slug, comps in sorted(cov.items()):
+        res = find_glyph(slug)
+        if res:
+            src, gname, how = res
+            stats[how] += 1
+            our = "ic_" + re.sub(r"[^a-z0-9_]", "_", slug.lower()).lstrip("_")
+            manifest[our] = {"glyph_src": src, "glyph_name": gname, "components": comps, "match": how, "slug": slug}
+        else:
+            misses.append(slug)
 
-OUT = Path(__file__).resolve().parent / "manifest.json"
-OUT.write_text(json.dumps(manifest, indent=1))
-with open(BASE / "match_report.txt", "w") as f:
-    f.write(f"matched {len(manifest)}/{len(cov)} apps\n")
-    f.write(f"by method: {dict(stats)}\n\nMISSES ({len(misses)}):\n")
-    f.write("\n".join(misses))
+    OUT = Path(__file__).resolve().parent / "manifest.json"
+    OUT.write_text(json.dumps(manifest, indent=1))
+    with open(BASE / "match_report.txt", "w") as f:
+        f.write(f"matched {len(manifest)}/{len(cov)} apps\n")
+        f.write(f"by method: {dict(stats)}\n\nMISSES ({len(misses)}):\n")
+        f.write("\n".join(misses))
 
-print(f"matched {len(manifest)}/{len(cov)}  by: {dict(stats)}")
-print("sample matches:")
-for k in list(manifest)[:10]:
-    print(" ", k, "->", manifest[k]["glyph_src"], manifest[k]["glyph_name"], f"({manifest[k]['match']})")
-print("misses sample:", misses[:20])
+    print(f"matched {len(manifest)}/{len(cov)}  by: {dict(stats)}")
+    print("sample matches:")
+    for k in list(manifest)[:10]:
+        print("  ", k, "->", manifest[k]["glyph_src"], manifest[k]["glyph_name"], f"({manifest[k]['match']})")
+    print("misses sample:", misses[:20])
+
+
+if __name__ == "__main__":
+    run_matching()
