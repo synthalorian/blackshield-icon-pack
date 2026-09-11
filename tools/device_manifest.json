@@ -1,0 +1,104 @@
+{
+ "ic_dev_aiopenclawapp": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "smart_toy",
+  "components": [
+   "ai.openclaw.app/ai.openclaw.app.MainActivity"
+  ]
+ },
+ "ic_dev_appopenbible": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "menu_book",
+  "components": [
+   "app.openbible/app.openbible.MainActivity"
+  ]
+ },
+ "ic_dev_comexamplehermeswingman": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "support_agent",
+  "components": [
+   "com.example.hermes_wingman/com.example.hermes_wingman.MainActivity"
+  ]
+ },
+ "ic_dev_commoonshotkimiclaw": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "smart_toy",
+  "components": [
+   "com.moonshot.kimiclaw/com.moonshot.kimiclaw.MainActivity"
+  ]
+ },
+ "ic_dev_comnikhilyt": {
+  "source": "glyph",
+  "glyph_src": "simple",
+  "glyph_name": "youtube",
+  "components": [
+   "com.nikhil.yt/com.nikhil.yt.MainActivity"
+  ]
+ },
+ "ic_dev_comopenamp": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "graphic_eq",
+  "components": [
+   "com.openamp/com.openamp.MainActivity"
+  ]
+ },
+ "ic_dev_comopenshieldarmory": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "shield",
+  "components": [
+   "com.openshield.armory/com.openshield.armory.MainActivity"
+  ]
+ },
+ "ic_dev_comsynthvhscam": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "videocam",
+  "components": [
+   "com.synth.vhscam/com.synth.vhscam.MainActivity"
+  ]
+ },
+ "ic_dev_comsynthvoidshmup": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "rocket_launch",
+  "components": [
+   "com.synth.voidshmup/org.libsdl.app.SDLActivity"
+  ]
+ },
+ "ic_dev_comsynthalorianscsynthesis": {
+  "source": "recolor",
+  "components": [
+   "com.synthalorian.sc_synthesis/com.synthalorian.sc_synthesis.MainActivity"
+  ]
+ },
+ "ic_dev_comsynthclawblackshieldicons": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "shield",
+  "components": [
+   "com.synthclaw.blackshieldicons/com.synthclaw.blackshieldicons.MainActivity"
+  ]
+ },
+ "ic_dev_comsynthclawblackshieldiconsred": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "shield",
+  "components": [
+   "com.synthclaw.blackshieldicons.red/com.synthclaw.blackshieldicons.MainActivity"
+  ]
+ },
+ "ic_dev_comsynthsharkflamingo": {
+  "source": "glyph",
+  "glyph_src": "material",
+  "glyph_name": "photo_camera",
+  "components": [
+   "com.synthshark.flamingo/com.synthshark.flamingo.MainActivity"
+  ]
+ }
+}
