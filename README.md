@@ -61,6 +61,13 @@ Icons render once at xxxhdpi as WebP (Android scales down); adaptive icons use
 a shared `tile_bg` + per-icon transparent foreground, with `<monochrome>` so
 Android 13+ themed icons work out of the box.
 
+## Variants (Gradle flavor dimension `livery`)
+
+- **bone** (default) — canon: bone glyphs, blood dash. `assembleBoneDebug`
+- **red** — canon swap: blood glyphs, bone dash, own launcher icon + label
+  "Blackshield Red", applicationId suffix `.red` (installs alongside bone).
+  `python3 tools/forge_icons.py --variant red && ./gradlew assembleRedDebug`
+
 ## Ship checklist (Play, $0.99–1.99)
 
 - [x] 100% coverage of the known-app database (48,120 components)
