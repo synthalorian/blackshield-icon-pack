@@ -59,7 +59,10 @@ Niagara/Hyperion (compat), Turbo.
 
 Icons render once at xxxhdpi as WebP (Android scales down); adaptive icons use
 a shared `tile_bg` + per-icon transparent foreground, with `<monochrome>` so
-Android 13+ themed icons work out of the box.
+Android 13+ themed icons work out of the box. Apps with no pack coverage get
+wrapped by the launcher: their own icon is masked into the steel tile with the
+accent dash stamped on top (`iconback`/`iconmask`/`iconupon`/`scale 0.75` in
+appfilter.xml) — nothing on the home screen looks out of place.
 
 ## Variants (Gradle flavor dimension `livery`)
 
