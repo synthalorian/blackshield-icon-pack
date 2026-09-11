@@ -11,7 +11,20 @@ android {
         minSdk 21
         targetSdk 35
         versionCode 1
-        versionName '0.1.0'
+        versionName '1.0.0'
+    }
+
+    flavorDimensions 'livery'
+    productFlavors {
+        bone {
+            dimension 'livery'
+            // canon: bone glyphs, blood dash — main/res
+        }
+        red {
+            dimension 'livery'
+            applicationIdSuffix '.red'
+            // canon swap: blood glyphs, bone dash — src/red/res
+        }
     }
 
     buildTypes {
