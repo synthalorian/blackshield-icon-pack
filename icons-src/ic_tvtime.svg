@@ -4,14 +4,14 @@
       <stop offset="0" stop-color="#1E1E26"/>
       <stop offset="1" stop-color="#101014"/>
     </linearGradient>
-    <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="glyphgrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#F5F1E8"/>
       <stop offset="1" stop-color="#D9D2C5"/>
     </linearGradient>
   </defs>
   <rect x="10.4" y="9.5" width="171.2" height="171.2" rx="34"
         fill="url(#tile)" stroke="#2A2A31" stroke-width="1.5"/>
-  <g fill="url(#bone)"
+  <g fill="url(#glyphgrad)"
      transform="translate(40.8 36.8) scale(4.6)"><path d="M0 0v24h24V0zm4.8 4.8h14.4v4.8h-4.8v9.6H9.6V9.6H4.8Z"/></g>
   <rect x="76" y="156" width="40" height="6" rx="3" fill="#C1121F"/>
 </svg>
