@@ -2,9 +2,30 @@ plugins {
     id 'com.android.application'
 }
 
+// Upload signing — creds live OUTSIDE the repo in ~/.keystores/ (chmod 600).
+def credsFile = new File(System.getProperty('user.home'), '.keystores/blackshield-upload.creds')
+def creds = new Properties()
+if (credsFile.exists()) {
+    credsFile.eachLine { line ->
+        def i = line.indexOf('=')
+        if (i > 0) creds.setProperty(line.substring(0, i).trim(), line.substring(i + 1).trim())
+    }
+}
+
 android {
     namespace 'com.synthclaw.blackshieldicons'
     compileSdk 35
+
+    signingConfigs {
+        release {
+            if (credsFile.exists()) {
+                storeFile file(creds.getProperty('storeFile'))
+                keyAlias creds.getProperty('keyAlias')
+                storePassword creds.getProperty('storePassword')
+                keyPassword creds.getProperty('keyPassword')
+            }
+        }
+    }
 
     defaultConfig {
         applicationId 'com.synthclaw.blackshieldicons'
@@ -30,6 +51,9 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            if (credsFile.exists()) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
