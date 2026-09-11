@@ -55,8 +55,9 @@ icon pack, dark icons, minimal icons, adaptive icons, monochrome
 - icon-512.png (hi-res icon)
 - feature-1024x500.png (feature graphic)
 - shot-1.png, shot-2.png (phone screenshots 1080x2400)
-- Same set for bone/ and red/ liveries (red = separate listing if published)
+- Same set for bone/ and red/ liveries (red = separate $0.99 listing)
 
 ## Price
-$0.99 USD (bone livery). Blackshield Red: free sibling or same price —
-listing decision pending.
+$0.99 USD — both liveries. Blackshield Red is a SEPARATE $0.99 listing
+(applicationId com.synthclaw.blackshieldicons.red, app-red-release.aab,
+store-assets/red/ art, same copy with the canon-swap paragraph as the lead).
