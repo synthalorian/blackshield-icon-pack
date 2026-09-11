@@ -4,14 +4,14 @@
       <stop offset="0" stop-color="#1E1E26"/>
       <stop offset="1" stop-color="#101014"/>
     </linearGradient>
-    <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="glyphgrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#F5F1E8"/>
       <stop offset="1" stop-color="#D9D2C5"/>
     </linearGradient>
   </defs>
   <rect x="10.4" y="9.5" width="171.2" height="171.2" rx="34"
         fill="url(#tile)" stroke="#2A2A31" stroke-width="1.5"/>
-  <g fill="url(#bone)"
+  <g fill="url(#glyphgrad)"
      transform="translate(40.8 36.8) scale(4.6)"><path d="M12 0L1.608 6v12L12 24l10.392-6V6zm-1.073 1.445h.001a1.8 1.8 0 002.138 0l7.534 4.35a1.794 1.794 0 000 .403l-7.535 4.35a1.8 1.8 0 00-2.137 0l-7.536-4.35a1.795 1.795 0 000-.402zM21.324 7.4c.109.08.226.147.349.201v8.7a1.8 1.8 0 00-1.069 1.852l-7.535 4.35a1.8 1.8 0 00-.349-.2l-.009-8.653a1.8 1.8 0 001.07-1.851zm-18.648.048l7.535 4.35a1.8 1.8 0 001.069 1.852v8.7c-.124.054-.24.122-.349.202l-7.535-4.35a1.8 1.8 0 00-1.069-1.852v-8.7c.124-.054.24-.122.35-.202z"/></g>
   <rect x="76" y="156" width="40" height="6" rx="3" fill="#C1121F"/>
 </svg>
