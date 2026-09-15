@@ -268,8 +268,8 @@
     <item drawable="ic_dev_comopenamp" />
     <item drawable="ic_dev_comopenshieldarmory" />
     <item drawable="ic_dev_comsynthalorianscsynthesis" />
-    <item drawable="ic_dev_comsynthclawblackshieldicons" />
-    <item drawable="ic_dev_comsynthclawblackshieldiconsred" />
+    <item drawable="ic_dev_comblackclawblackshieldicons" />
+    <item drawable="ic_dev_comblackclawblackshieldiconsred" />
     <item drawable="ic_dev_comsynthsharkflamingo" />
     <item drawable="ic_dev_comsynthvhscam" />
     <item drawable="ic_dev_comsynthvoidshmup" />

@@ -3,7 +3,7 @@
 Steel + blood icon pack for Android launchers (Nova, Lawnchair, Apex, ADW, Smart, Niagara-via-compat).
 Dark Nordzy-style tiles, bone glyphs, one blood accent per icon.
 
-**Made by synth with synthclaw**
+**Made by synth with blackclaw**
 
 ## Palette
 

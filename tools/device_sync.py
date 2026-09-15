@@ -46,8 +46,8 @@ MANUAL_DEVICE = {
     "com.synth.vhscam": ("material", "videocam"),
     "com.synth.voidshmup": ("material", "rocket_launch"),
     "com.synthalorian.sc_synthesis": ("simple", "starcitizen"),
-    "com.synthclaw.blackshieldicons": ("material", "shield"),
-    "com.synthclaw.blackshieldicons.red": ("material", "shield"),
+    "com.blackclaw.blackshieldicons": ("material", "shield"),
+    "com.blackclaw.blackshieldicons.red": ("material", "shield"),
     "com.synthshark.flamingo": ("material", "photo_camera"),
 }
 

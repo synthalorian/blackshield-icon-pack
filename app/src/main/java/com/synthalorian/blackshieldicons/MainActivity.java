@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
         root.addView(body);
 
         TextView credit = new TextView(this);
-        credit.setText("Made by synth with synthclaw");
+        credit.setText("Made by synth with blackclaw");
         credit.setTextColor(TEXT);
         credit.setAlpha(0.5f);
         credit.setTextSize(12);

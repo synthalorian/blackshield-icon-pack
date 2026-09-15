@@ -77,20 +77,20 @@
    "com.synthalorian.sc_synthesis/com.synthalorian.sc_synthesis.MainActivity"
   ]
  },
- "ic_dev_comsynthclawblackshieldicons": {
+ "ic_dev_comblackclawblackshieldicons": {
   "source": "glyph",
   "glyph_src": "material",
   "glyph_name": "shield",
   "components": [
-   "com.synthclaw.blackshieldicons/com.synthclaw.blackshieldicons.MainActivity"
+   "com.blackclaw.blackshieldicons/com.blackclaw.blackshieldicons.MainActivity"
   ]
  },
- "ic_dev_comsynthclawblackshieldiconsred": {
+ "ic_dev_comblackclawblackshieldiconsred": {
   "source": "glyph",
   "glyph_src": "material",
   "glyph_name": "shield",
   "components": [
-   "com.synthclaw.blackshieldicons.red/com.synthclaw.blackshieldicons.MainActivity"
+   "com.blackclaw.blackshieldicons.red/com.blackclaw.blackshieldicons.MainActivity"
   ]
  },
  "ic_dev_comsynthsharkflamingo": {

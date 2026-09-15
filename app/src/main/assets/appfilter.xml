@@ -12645,10 +12645,10 @@
     <item component="ComponentInfo{com.openshield.armory/com.openshield.armory.MainActivity}" drawable="ic_dev_comopenshieldarmory" />
     <!-- ic_dev_comsynthalorianscsynthesis -->
     <item component="ComponentInfo{com.synthalorian.sc_synthesis/com.synthalorian.sc_synthesis.MainActivity}" drawable="ic_dev_comsynthalorianscsynthesis" />
-    <!-- ic_dev_comsynthclawblackshieldicons -->
-    <item component="ComponentInfo{com.synthalorian.blackshieldicons/com.synthalorian.blackshieldicons.MainActivity}" drawable="ic_dev_comsynthclawblackshieldicons" />
-    <!-- ic_dev_comsynthclawblackshieldiconsred -->
-    <item component="ComponentInfo{com.synthalorian.blackshieldicons.red/com.synthalorian.blackshieldicons.MainActivity}" drawable="ic_dev_comsynthclawblackshieldiconsred" />
+    <!-- ic_dev_comblackclawblackshieldicons -->
+    <item component="ComponentInfo{com.synthalorian.blackshieldicons/com.synthalorian.blackshieldicons.MainActivity}" drawable="ic_dev_comblackclawblackshieldicons" />
+    <!-- ic_dev_comblackclawblackshieldiconsred -->
+    <item component="ComponentInfo{com.synthalorian.blackshieldicons.red/com.synthalorian.blackshieldicons.MainActivity}" drawable="ic_dev_comblackclawblackshieldiconsred" />
     <!-- ic_dev_comsynthsharkflamingo -->
     <item component="ComponentInfo{com.synthshark.flamingo/com.synthshark.flamingo.MainActivity}" drawable="ic_dev_comsynthsharkflamingo" />
     <!-- ic_dev_comsynthvhscam -->
