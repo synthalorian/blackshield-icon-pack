@@ -7,3 +7,5 @@ tools/lib/
 build/svg/
 tools/.venv/
 tools/device_icons/apks/
+__pycache__/
+*.pyc
