@@ -12646,9 +12646,9 @@
     <!-- ic_dev_comsynthalorianscsynthesis -->
     <item component="ComponentInfo{com.synthalorian.sc_synthesis/com.synthalorian.sc_synthesis.MainActivity}" drawable="ic_dev_comsynthalorianscsynthesis" />
     <!-- ic_dev_comsynthclawblackshieldicons -->
-    <item component="ComponentInfo{com.synthclaw.blackshieldicons/com.synthclaw.blackshieldicons.MainActivity}" drawable="ic_dev_comsynthclawblackshieldicons" />
+    <item component="ComponentInfo{com.synthalorian.blackshieldicons/com.synthalorian.blackshieldicons.MainActivity}" drawable="ic_dev_comsynthclawblackshieldicons" />
     <!-- ic_dev_comsynthclawblackshieldiconsred -->
-    <item component="ComponentInfo{com.synthclaw.blackshieldicons.red/com.synthclaw.blackshieldicons.MainActivity}" drawable="ic_dev_comsynthclawblackshieldiconsred" />
+    <item component="ComponentInfo{com.synthalorian.blackshieldicons.red/com.synthalorian.blackshieldicons.MainActivity}" drawable="ic_dev_comsynthclawblackshieldiconsred" />
     <!-- ic_dev_comsynthsharkflamingo -->
     <item component="ComponentInfo{com.synthshark.flamingo/com.synthshark.flamingo.MainActivity}" drawable="ic_dev_comsynthsharkflamingo" />
     <!-- ic_dev_comsynthvhscam -->
@@ -31768,6 +31768,7 @@
     <item component="ComponentInfo{com.mcdonalds.app.uk/com.mcdonalds.mcdcoreapp.common.activity.SplashActivity}" drawable="ic_mcdonalds" />
     <item component="ComponentInfo{com.mcdonalds.app/com.mcdonalds.app.startup.SplashActivity}" drawable="ic_mcdonalds" />
     <item component="ComponentInfo{com.mcdonalds.app/com.mcdonalds.mcdcoreapp.common.activity.SplashActivity}" drawable="ic_mcdonalds" />
+    <item component="ComponentInfo{com.mcdonalds.app/com.mcdonalds.app.LauncherDefault}" drawable="ic_mcdonalds" />
     <item component="ComponentInfo{com.mcdonalds.au.gma/com.mcdonalds.mcdcoreapp.common.activity.SplashActivity}" drawable="ic_mcdonalds" />
     <item component="ComponentInfo{com.mcdonalds.gma.cn/com.mcdonalds.gma.cn.activity.LaunchActivity}" drawable="ic_mcdonalds" />
     <item component="ComponentInfo{com.mcdonalds.gma.cn/com.mcdonalds.gma.cn.activity.LaunchActivity.cny}" drawable="ic_mcdonalds" />
