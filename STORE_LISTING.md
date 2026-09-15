@@ -59,5 +59,5 @@ icon pack, dark icons, minimal icons, adaptive icons, monochrome
 
 ## Price
 $0.99 USD — both liveries. Blackshield Red is a SEPARATE $0.99 listing
-(applicationId com.synthclaw.blackshieldicons.red, app-red-release.aab,
+(applicationId com.synthalorian.blackshieldicons.red, app-red-release.aab,
 store-assets/red/ art, same copy with the canon-swap paragraph as the lead).

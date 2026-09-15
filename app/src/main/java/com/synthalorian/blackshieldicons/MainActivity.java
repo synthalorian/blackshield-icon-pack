@@ -1,4 +1,4 @@
-package com.synthclaw.blackshieldicons;
+package com.synthalorian.blackshieldicons;
 
 import android.app.Activity;
 import android.os.Bundle;

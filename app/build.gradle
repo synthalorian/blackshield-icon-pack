@@ -13,7 +13,7 @@ if (credsFile.exists()) {
 }
 
 android {
-    namespace 'com.synthclaw.blackshieldicons'
+    namespace 'com.synthalorian.blackshieldicons'
     compileSdk 35
 
     signingConfigs {
@@ -28,7 +28,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.synthclaw.blackshieldicons'
+        applicationId 'com.synthalorian.blackshieldicons'
         minSdk 21
         targetSdk 35
         versionCode 1
